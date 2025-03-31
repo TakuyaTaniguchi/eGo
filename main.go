@@ -45,7 +45,7 @@ func tacticsHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := PageData{
 		Title:   "隅の形",
-		Message: "Hello, World!",
+		Message: "Hello, Waaaorld!",
 	}
 
 	err = tmpl.Execute(w, data)
@@ -62,8 +62,8 @@ func atariHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := PageData{
-		Title:   "隅の形",
-		Message: "Hello, World!",
+		Title:   "アタリについて",
+		Message: "Hello, bbbbbWorld!",
 	}
 
 	err = tmpl.Execute(w, data)
