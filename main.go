@@ -12,28 +12,26 @@ type PageData struct {
 	Message string
 }
 
-func main() {
-	// テンプレートファイルのパス設定
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
 
-	// ハンドラーの設定
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := PageData{
-			Title:   "Goウェブアプリ",
-			Message: "Hello, World!",
-		}
+	data := PageData{
+		Title:   "Goウェブアプリ",
+		Message: "Hello, World!",
+	}
+	err := tmpl.Execute(w, data)
+	if err != nil {
+		log.Printf("テンプレート実行エラー: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
 
-		// テンプレートの実行
-		err := tmpl.Execute(w, data)
-		if err != nil {
-			log.Printf("テンプレート実行エラー: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-	})
+func main() {
 
 	// 静的ファイルのサーブ（オプション）
 	// http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.HandleFunc("/", homeHandler)
 
 	// サーバー起動
 	log.Println("サーバーを起動します。http://localhost:8080")
