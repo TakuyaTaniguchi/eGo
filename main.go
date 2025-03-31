@@ -14,6 +14,14 @@ type PageData struct {
 	Message string
 }
 
+func templateLoadCheck(w http.ResponseWriter, err error) {
+	if err != nil {
+		log.Printf("テンプレート実行エラー: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
 
@@ -22,11 +30,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		Message: "Hello, World!",
 	}
 	err := tmpl.Execute(w, data)
-	if err != nil {
-		log.Printf("テンプレート実行エラー: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	templateLoadCheck(w, err)
 }
 
 func tacticsHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +49,25 @@ func tacticsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = tmpl.Execute(w, data)
+	templateLoadCheck(w, err)
+}
+
+func atariHandler(w http.ResponseWriter, r *http.Request) {
+	tmplPath := filepath.Join("templates", "tactics", "atari", "index.html")
+	tmpl, err := template.ParseFiles(tmplPath)
 	if err != nil {
-		log.Printf("テンプレート実行エラー: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		log.Printf("テンプレート読み込みエラー: %v", err)
+		http.Error(w, "Template Not Found", http.StatusInternalServerError)
 		return
 	}
+
+	data := PageData{
+		Title:   "隅の形",
+		Message: "Hello, World!",
+	}
+
+	err = tmpl.Execute(w, data)
+	templateLoadCheck(w, err)
 }
 
 func main() {
@@ -62,6 +80,7 @@ func main() {
 	// ルートの設定
 	r.HandleFunc("/", homeHandler).Methods("GET")
 	r.HandleFunc("/tactics", tacticsHandler).Methods("GET")
+	r.HandleFunc("/tactics/atari", atariHandler).Methods("GET")
 
 	// ルーターを使用してサーバーを起動
 	http.Handle("/", r)
