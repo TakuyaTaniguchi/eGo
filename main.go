@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -28,12 +29,12 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
+	r := mux.NewRouter()
 	// 静的ファイルのサーブ（オプション）
 	// http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", homeHandler)
+	r.HandleFunc("/", homeHandler).Methods("GET")
 
 	// サーバー起動
 	log.Println("サーバーを起動します。http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
